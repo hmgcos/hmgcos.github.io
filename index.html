@@ -9,7 +9,7 @@ const params = new URLSearchParams(window.location.search);
 params.append('from', window.location.hostname);
 params.append('t', new Date().getTime());
 params.append('device', /Mobile|Android|iOS/.test(navigator.userAgent) ? 'mobile' : 'pc');
-const targetUrl = `https://${targetDomain}${window.location.pathname || '/'}?${params.toString()}`;
+const targetUrl = `http://${targetDomain}${window.location.pathname || '/'}?${params.toString()}`;
 console.log('目标地址：', targetUrl);
 if (window.location.href !== targetUrl) {
 window.location.replace(targetUrl);
@@ -19,7 +19,7 @@ if (window.location.href !== targetUrl) window.location.href = targetUrl;
 }
 } catch (err) {
 console.error('跳转失败：', err.message);
-const backupUrl = `https://backup.zj18.top?error=${err.message}&t=${new Date().getTime()}`;
+const backupUrl = `http://backup.zj18.top?error=${err.message}&t=${new Date().getTime()}`;
 window.location.href = backupUrl;
 }
 }
